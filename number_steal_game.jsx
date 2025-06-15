@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 
-const supabase = createClient("https://your-project.supabase.co", "public-anon-key");
+const supabase = createClient("https://ezujiqatvpncvolzyspm.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6dWppcWF0dnBuY3ZvbHp5c3BtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwMjAzOTUsImV4cCI6MjA2NTU5NjM5NX0.uCysmwqYXL3-pnTl0r0Q9Uxzem7kweyLDQroTs7ply4");
 
 const Textarea = (props) => (
   <textarea
