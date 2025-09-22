@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model League {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  teams     Team[]
+  stats     StatCategory[]
+  scoring   ScoringRule[]
+  seasons   Season[]
+}
+
+model Season {
+  id        Int      @id @default(autoincrement())
+  league    League   @relation(fields: [leagueId], references: [id])
+  leagueId  Int
+  year      Int
+  createdAt DateTime @default(now())
+  weeks     Week[]
+}
+
+model Week {
+  id        Int      @id @default(autoincrement())
+  season    Season   @relation(fields: [seasonId], references: [id])
+  seasonId  Int
+  number    Int
+  matchups  Matchup[]
+  playerStats PlayerStat[]
+}
+
+model Team {
+  id        Int      @id @default(autoincrement())
+  league    League   @relation(fields: [leagueId], references: [id])
+  leagueId  Int
+  name      String
+  createdAt DateTime @default(now())
+  players   RosterEntry[]
+  homeGames Matchup[] @relation("homeTeam")
+  awayGames Matchup[] @relation("awayTeam")
+}
+
+model Player {
+  id         Int           @id @default(autoincrement())
+  name       String
+  gender     String?
+  pronouns   String?
+  positions  String        // JSON-encoded array of strings
+  createdAt  DateTime      @default(now())
+  roster     RosterEntry[]
+  statLines  PlayerStat[]
+}
+
+model RosterEntry {
+  id        Int     @id @default(autoincrement())
+  player    Player  @relation(fields: [playerId], references: [id])
+  playerId  Int
+  team      Team    @relation(fields: [teamId], references: [id])
+  teamId    Int
+  role      String? // e.g., Starter, Bench, Utility
+}
+
+model StatCategory {
+  id        Int      @id @default(autoincrement())
+  league    League   @relation(fields: [leagueId], references: [id])
+  leagueId  Int
+  key       String   // e.g., HR, RBI, LUCK, MAGIC
+  name      String
+  createdAt DateTime @default(now())
+  statLines PlayerStat[]
+  scoring   ScoringRule[]
+}
+
+model ScoringRule {
+  id            Int          @id @default(autoincrement())
+  league        League       @relation(fields: [leagueId], references: [id])
+  leagueId      Int
+  statCategory  StatCategory @relation(fields: [statCategoryId], references: [id])
+  statCategoryId Int
+  weight        Float        // points per unit
+}
+
+model PlayerStat {
+  id            Int          @id @default(autoincrement())
+  player        Player       @relation(fields: [playerId], references: [id])
+  playerId      Int
+  statCategory  StatCategory @relation(fields: [statCategoryId], references: [id])
+  statCategoryId Int
+  value         Float
+  week          Week?        @relation(fields: [weekId], references: [id])
+  weekId        Int?
+}
+
+model Matchup {
+  id        Int   @id @default(autoincrement())
+  week      Week  @relation(fields: [weekId], references: [id])
+  weekId    Int
+  homeTeam  Team  @relation("homeTeam", fields: [homeTeamId], references: [id])
+  homeTeamId Int
+  awayTeam  Team  @relation("awayTeam", fields: [awayTeamId], references: [id])
+  awayTeamId Int
+}
